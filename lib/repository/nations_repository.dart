@@ -8,10 +8,15 @@ abstract class NationsRepositoryContract {
 
 class NationRepository implements NationsRepositoryContract {
   static const String URL = "https://firetest-dcdb9.firebaseapp.com/";
+  String serverUrl;
+
+  NationRepository() {
+    serverUrl = URL + "nations.json";
+  }
 
   @override
   Future<List> getNations() async {
-    var response = await http.get(Uri.decodeFull(URL + "nations.json"),
+    var response = await http.get(Uri.decodeFull(serverUrl),
         headers: {"Accept": "application/json"});
 
     Map<String, dynamic> data = json.decode(response.body);
