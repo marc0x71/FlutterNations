@@ -12,7 +12,7 @@ void main() {
   MockView view = new MockView();
   NationsPresenter presenter = new NationsPresenter(view);
 
-  test("Get nations successfuly", () async {
+  test("Get nations successfully", () async {
     repository.throwException = false;
     presenter.loadNations();
     await untilCalled(view.onComplete(repository.nations));
