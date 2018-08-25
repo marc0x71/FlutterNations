@@ -11,6 +11,7 @@ class HomeWidget extends StatefulWidget {
 class HomeWidgetState extends State<HomeWidget> implements NationsViewContract {
   NationsPresenter _presenter;
   List _data;
+  bool _networkError = false;
 
   HomeWidgetState() {
     _presenter = new NationsPresenter(this);
@@ -19,7 +20,7 @@ class HomeWidgetState extends State<HomeWidget> implements NationsViewContract {
   @override
   void initState() {
     super.initState();
-    print ("loading...");
+    print("loading...");
     _presenter.loadNations();
   }
 
@@ -29,12 +30,16 @@ class HomeWidgetState extends State<HomeWidget> implements NationsViewContract {
         color: Colors.blueGrey,
         child: new Scaffold(
           appBar: new AppBar(
+            key: new Key('appBar'),
             title: new Text("Nations"),
           ),
           body: _data != null
               ? _buildNationsList()
               : new Center(
-                  child: new CircularProgressIndicator(),
+                  child: _networkError
+                      ? new Icon(Icons.cloud_off,
+                          size: 80.0, color: Colors.grey)
+                      : CircularProgressIndicator(),
                 ),
         ));
   }
@@ -64,5 +69,9 @@ class HomeWidgetState extends State<HomeWidget> implements NationsViewContract {
   @override
   void onError() {
     print("There is an error");
+    this.setState(() {
+      _data = null;
+      _networkError = true;
+    });
   }
 }
