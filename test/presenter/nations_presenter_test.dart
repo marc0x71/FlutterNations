@@ -7,19 +7,24 @@ import 'package:mockito/mockito.dart';
 class MockView extends Mock implements NationsViewContract {}
 
 void main() {
-  Injector.configure(Flavor.MOCK);
-  MockNationRepository repository = new Injector().nationsRepository;
-  MockView view = new MockView();
-  NationsPresenter presenter = new NationsPresenter(view);
+  MockNationRepository _repository;
+  NationsPresenter _presenter;
+  MockView _view;
 
+  setUp(() {
+    Injector.configure(Flavor.MOCK);
+    _repository = new Injector().nationsRepository;
+    _view = new MockView();
+    _presenter = new NationsPresenter(_view);
+    _repository.throwException = false;
+  });
   test("Get nations successfully", () async {
-    repository.throwException = false;
-    presenter.loadNations();
-    await untilCalled(view.onComplete(repository.nations));
+    _presenter.loadNations();
+    await untilCalled(_view.onComplete(_repository.nations));
   });
   test("Throw exception", () async {
-    repository.throwException = true;
-    presenter.loadNations();
-    await untilCalled(view.onError());
+    _repository.throwException = true;
+    _presenter.loadNations();
+    await untilCalled(_view.onError());
   });
 }
