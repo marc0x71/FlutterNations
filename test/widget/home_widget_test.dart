@@ -7,7 +7,10 @@ import 'package:nations/widget/home_widget.dart';
 void debugDumpApp() {
   assert(WidgetsBinding.instance != null);
   String mode = 'RELEASE MODE';
-  assert(() { mode = 'CHECKED MODE'; return true; }());
+  assert(() {
+    mode = 'CHECKED MODE';
+    return true;
+  }());
   debugPrint('${WidgetsBinding.instance.runtimeType} - $mode');
   if (WidgetsBinding.instance.renderViewElement != null) {
     debugPrint(WidgetsBinding.instance.renderViewElement.toStringDeep());
@@ -32,10 +35,14 @@ void main() {
     final Finder cards = find.byType(Card);
     expect(cards, findsNWidgets(4));
 
-    expect(find.text('Italia'), findsOneWidget);    
-    expect(find.text('Ungheria'), findsOneWidget);    
-    expect(find.text('Francia'), findsOneWidget);    
-    expect(find.text('Spagna'), findsOneWidget);    
+    var list = [];
+    cards.evaluate().forEach((element) {
+      Card card = element.widget as Card;
+      Text text = (card.child as Container).child as Text;
+      list.add(text.data);
+    });
+
+    expect(list, _repository.nations);
   });
 
   testWidgets('In case of error', (WidgetTester tester) async {
@@ -44,7 +51,7 @@ void main() {
     await tester.pump(new Duration(seconds: 5));
 
     final Finder icon = find.byType(Icon);
-    expect(icon, findsOneWidget);   
+    expect(icon, findsOneWidget);
 
     Icon i = tester.widget(icon);
     expect(i.icon, Icons.cloud_off);
