@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:nations/injector.dart';
+import 'package:nations/provider/nations_provider.dart';
 import 'package:nations/repository/mock_nations_repository.dart';
 import 'package:nations/widget/home_widget.dart';
 
@@ -29,7 +30,7 @@ void main() {
   });
 
   testWidgets('Success', (WidgetTester tester) async {
-    await tester.pumpWidget(new MaterialApp(home: new HomeWidget()));
+    await tester.pumpWidget(new MaterialApp(home: new NationsProvider(child: new HomeWidget())));
     await tester.pump(new Duration(seconds: 5));
 
     final Finder cards = find.byType(Card);
@@ -47,7 +48,7 @@ void main() {
 
   testWidgets('In case of error', (WidgetTester tester) async {
     _repository.throwException = true;
-    await tester.pumpWidget(new MaterialApp(home: new HomeWidget()));
+    await tester.pumpWidget(new MaterialApp(home: new NationsProvider(child: new HomeWidget())));
     await tester.pump(new Duration(seconds: 5));
 
     final Finder icon = find.byType(Icon);

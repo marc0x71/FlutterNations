@@ -15,7 +15,8 @@ class NationRepository implements NationsRepositoryContract {
   }
 
   @override
-  Future<List> getNations() async {
+  Future<List<String>> getNations() async {
+    
     var response = await http.get(Uri.decodeFull(serverUrl),
         headers: {"Accept": "application/json"});
 
@@ -23,7 +24,7 @@ class NationRepository implements NationsRepositoryContract {
     List nations = data["nations"];
 
     // remove unexpected null items
-    List result = new List();
+    List<String> result = [];
     for (int i = 0; i < nations.length; i++) {
       if (nations[i] != null) result.add(nations[i]["name"]);
     }
