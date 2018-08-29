@@ -9,16 +9,12 @@ class NationsBloc {
   StreamController<bool> _error = StreamController();
 
   NationsBloc() {
-    print("bloc!");
     _repository = new Injector().nationsRepository;
     _error.add(false);
-
-    _results = _repository.getNations().asStream().handleError((error) => _error.add(true));
-
-/*
-    _repository.getNations().then((list) {
-      _results.add(list as List<String>);
-    });*/
+    _results = _repository
+        .getNations()
+        .asStream()
+        .handleError((error) => _error.add(true));
   }
 
   Stream<List<String>> get results => _results;
