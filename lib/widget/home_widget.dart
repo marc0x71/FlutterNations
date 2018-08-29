@@ -59,19 +59,21 @@ class HomeWidgetState extends State<HomeWidget> {
         stream: _bloc.results,
         builder: (context, snapshot) {
           if (!snapshot.hasData) {
-            return new PageView(
-              children: <Widget>[
-              new Center(
-                  child: _networkError
-                      ? new Icon(Icons.cloud_off,
-                          size: 80.0, color: Colors.grey)
-                      : CircularProgressIndicator()),
-              ],
+            return new SingleChildScrollView(
+              physics: AlwaysScrollableScrollPhysics(),
+              child: new Container(
+                height: MediaQuery.of(context).size.height,
+                child: new Center(
+                    child: _networkError
+                        ? new Icon(Icons.cloud_off,
+                            size: 80.0, color: Colors.grey)
+                        : CircularProgressIndicator()),
+              ),
             );
           }
 
           print("list size = ${snapshot.data.length}");
-          
+
           return new ListView.builder(
             itemCount: snapshot.data.length,
             itemBuilder: (BuildContext context, int index) {
