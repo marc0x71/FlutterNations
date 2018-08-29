@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:nations/bloc/nations_bloc.dart';
 import 'package:nations/injector.dart';
 import 'package:nations/provider/nations_provider.dart';
 import 'package:nations/repository/mock_nations_repository.dart';
@@ -30,8 +31,11 @@ void main() {
   });
 
   testWidgets('Success', (WidgetTester tester) async {
-    await tester.pumpWidget(new MaterialApp(home: new NationsProvider(child: new HomeWidget())));
-    await tester.pump(new Duration(seconds: 5));
+    NationsBloc _bloc = new NationsBloc();
+    await tester.pumpWidget(new MaterialApp(home: new NationsProvider(bloc: _bloc, child: new HomeWidget())));  
+    await tester.pump(new Duration(seconds: 2));
+    _bloc.refresh();
+    await tester.pump(new Duration(seconds: 2));
 
     final Finder cards = find.byType(Card);
     expect(cards, findsNWidgets(4));
@@ -48,8 +52,11 @@ void main() {
 
   testWidgets('In case of error', (WidgetTester tester) async {
     _repository.throwException = true;
-    await tester.pumpWidget(new MaterialApp(home: new NationsProvider(child: new HomeWidget())));
-    await tester.pump(new Duration(seconds: 5));
+    NationsBloc _bloc = new NationsBloc();
+    await tester.pumpWidget(new MaterialApp(home: new NationsProvider(bloc: _bloc, child: new HomeWidget())));  
+    await tester.pump(new Duration(seconds: 2));
+    _bloc.refresh();
+    await tester.pump(new Duration(seconds: 2));
 
     final Finder icon = find.byType(Icon);
     expect(icon, findsOneWidget);

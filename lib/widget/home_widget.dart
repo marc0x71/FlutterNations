@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:nations/bloc/nations_bloc.dart';
 import 'package:nations/provider/nations_provider.dart';
@@ -16,13 +18,16 @@ class HomeWidgetState extends State<HomeWidget> {
   @override
   void initState() {
     super.initState();
-    print("loading...");
   }
 
   @override
   Widget build(BuildContext context) {
     _bloc = NationsProvider.of(context);
-    _bloc.errors.listen((value) => _networkError = value );
+    _bloc.errors.listen((value) {
+      setState(() {
+        _networkError = value;
+      });
+    });
     return new Material(
         color: Colors.blueGrey,
         child: new Scaffold(
@@ -30,7 +35,23 @@ class HomeWidgetState extends State<HomeWidget> {
               key: new Key('appBar'),
               title: new Text("Nations"),
             ),
-            body: _buildNationsList()));
+            body: _refreshIndicator()));
+  }
+
+  Future<Null> _handleRefresh() async {
+    _bloc.refresh();
+    Completer<Null> completer = new Completer();
+    _bloc.isLoading.listen((value) {
+      if (!value) completer.complete(null);
+    });
+    return completer.future;
+  }
+
+  Widget _refreshIndicator() {
+    return new RefreshIndicator(
+      onRefresh: _handleRefresh,
+      child: _buildNationsList(),
+    );
   }
 
   Widget _buildNationsList() {
@@ -38,12 +59,19 @@ class HomeWidgetState extends State<HomeWidget> {
         stream: _bloc.results,
         builder: (context, snapshot) {
           if (!snapshot.hasData) {
-            return new Center(
-              child: _networkError
-                  ? new Icon(Icons.cloud_off, size: 80.0, color: Colors.grey)
-                  : CircularProgressIndicator(),
+            return new PageView(
+              children: <Widget>[
+              new Center(
+                  child: _networkError
+                      ? new Icon(Icons.cloud_off,
+                          size: 80.0, color: Colors.grey)
+                      : CircularProgressIndicator()),
+              ],
             );
           }
+
+          print("list size = ${snapshot.data.length}");
+          
           return new ListView.builder(
             itemCount: snapshot.data.length,
             itemBuilder: (BuildContext context, int index) {
