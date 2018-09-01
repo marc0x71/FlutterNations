@@ -14,6 +14,9 @@ class HomeWidget extends StatefulWidget {
 class HomeWidgetState extends State<HomeWidget> {
   NationsBloc _bloc;
   bool _networkError = false;
+  Completer<Null> _completer;
+  StreamSubscription _loadingSub;
+  StreamSubscription _errorSub;
 
   @override
   void initState() {
@@ -21,13 +24,31 @@ class HomeWidgetState extends State<HomeWidget> {
   }
 
   @override
+  void dispose() {
+    super.dispose();
+    _loadingSub.cancel();
+    _errorSub.cancel();
+  }
+
+  @override
   Widget build(BuildContext context) {
     _bloc = NationsProvider.of(context);
-    _bloc.errors.listen((value) {
-      setState(() {
-        _networkError = value;
-      });
-    });
+
+    _errorSub = _errorSub ??
+        _bloc.errors.listen((value) {
+          setState(() {
+            _networkError = value;
+          });
+        });
+    _loadingSub = _loadingSub ??
+        _bloc.isLoading.listen((value) {
+          if (_completer != null && _completer.isCompleted) {
+            return;
+          }
+          if (!value) {
+            if (_completer != null) _completer.complete(null);
+          }
+        });
     return new Material(
         color: Colors.blueGrey,
         child: new Scaffold(
@@ -40,11 +61,8 @@ class HomeWidgetState extends State<HomeWidget> {
 
   Future<Null> _handleRefresh() async {
     _bloc.refresh();
-    Completer<Null> completer = new Completer();
-    _bloc.isLoading.listen((value) {
-      if (!value) completer.complete(null);
-    });
-    return completer.future;
+    _completer = new Completer<Null>();
+    return _completer.future;
   }
 
   Widget _refreshIndicator() {
@@ -71,8 +89,6 @@ class HomeWidgetState extends State<HomeWidget> {
               ),
             );
           }
-
-          print("list size = ${snapshot.data.length}");
 
           return new ListView.builder(
             itemCount: snapshot.data.length,

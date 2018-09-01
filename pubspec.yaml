@@ -14,8 +14,10 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
 
-  mockito: ">=2.2.0 <3.0.0"
-  mock_web_server: ^2.1.0
+  mockito: ^3.0.0-beta+2
+  #mock_web_server: ^2.1.0 <-- dart2 compatibility problem 
+  mock_web_server:
+    git: https://gitlab.com/haarts/MockWebServer
 
 
 # For information on the generic Dart part of this file, see the
