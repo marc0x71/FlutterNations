@@ -22,6 +22,7 @@ class NationsBloc {
       _loading.add(false);
       _results.add(list);
     }).catchError((error) {
+      _loading.add(false);
       _results.add(null);
       _error.add(true);
     });

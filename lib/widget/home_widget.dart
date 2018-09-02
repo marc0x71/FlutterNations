@@ -19,21 +19,9 @@ class HomeWidgetState extends State<HomeWidget> {
   StreamSubscription _errorSub;
 
   @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-    _loadingSub.cancel();
-    _errorSub.cancel();
-  }
-
-  @override
-  Widget build(BuildContext context) {
+  void didChangeDependencies() {
+    super.didChangeDependencies();
     _bloc = NationsProvider.of(context);
-
     _errorSub = _errorSub ??
         _bloc.errors.listen((value) {
           setState(() {
@@ -49,6 +37,17 @@ class HomeWidgetState extends State<HomeWidget> {
             if (_completer != null) _completer.complete(null);
           }
         });
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _loadingSub.cancel();
+    _errorSub.cancel();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return new Material(
         color: Colors.blueGrey,
         child: new Scaffold(
